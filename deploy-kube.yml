@@ -1,11 +1,11 @@
 - hosts: "{{ env }}"
   become: yes
-  tasks: 
+  tasks:
     - name: remove any previous app services
-      shell: | 
-              if [ `kubectl get deploy | grep -v NAME | awk '{print $1}' | grep myapp-trainschedule | wc -l` -gt 0 ]; then  
+      shell: |
+         if [ `kubectl get deploy | grep -v NAME | awk '{print $1}' | grep myapp-trainschedule | wc -l` -gt 0 ]; then
             kubectl delete deploy `kubectl get deploy | grep -v NAME | awk '{print $1}' | grep myapp-trainschedule`
-         else 
+         else
             echo "No app deployments found"
          fi
          if [ `kubectl get svc | grep myapp-trainschedule-svc  | awk '{print $1}' | wc -l` -gt 0 ]; then
@@ -15,8 +15,7 @@
          fi
     - name: deploy app
       shell: kubectl create deploy myapp-trainschedule --image=nalkhande/trainschedule:{{ build }}
-    - name: increase replicas 
+    - name: increase replicas
       shell: kubectl scale deploy myapp-trainschedule --replicas=2
     - name: deploy service
       shell: kubectl expose deploy myapp-trainschedule --name myapp-trainschedule-svc --port 8080 --type NodePort
-
